@@ -1,0 +1,28 @@
+print ('Selamat Datang di Kalkulator Sederhana!')
+i=1
+while i <=5:
+    angka_1 = float(input('\nMasukkan angka pertama: '))
+    print ('Pilih salah satu dari operasi berikut:\n1 penjumlahan(+) \n2 pengurangan(-) \n3 perkalian(x) \n4 pembagian(:) \n5 keluar ')
+    i = int(input('nomor operasi yang akan dilakukan[1/2/3/4/5]:'))
+    angka_2 = float(input('Masukkan angka kedua: '))
+    if i==1:
+        hasil = angka_1+angka_2
+        print (f'\n{angka_1} + {angka_2} = {hasil}')
+    elif i==2:
+        hasil = angka_1-angka_2
+        print (f'\n{angka_1} - {angka_2} = {hasil}')
+    elif i==3:
+        hasil = angka_1*angka_2
+        print (f'\n{angka_1} x {angka_2} = {hasil}')
+    elif i==4:
+        if angka_2==0:
+            hasil ='hasil tidak terdefinisi'
+        else:
+            hasil = angka_1/angka_2
+        print (f'\n{angka_1} : {angka_2} = {hasil}')    
+    elif i==5:
+        break
+    else:
+        print ('Mohon pilih operasi yang tersedia')
+  
+print ('\nTerima Kasih Sudah Menggunakan Kalkulator Sederhana Ini!')
