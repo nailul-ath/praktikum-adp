@@ -1,4 +1,4 @@
-n = int(input('Masukkan nilai n [minimal 4]: '))
+n = int(input('Masukkan jumlah baris [minimal 4]: '))
 if n%2==0:
     a = int(n/2)
 
