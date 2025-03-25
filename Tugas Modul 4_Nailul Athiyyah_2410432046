@@ -23,4 +23,5 @@ else:
         print ('BOOM '*(b-i) + '  2  ' + "BOOM "*(2*i-1) + '  1  ' + ' BOOM'*(b-i) )
 
     jumlah_boom= n**2 - ((n-1)*2+1)
-    print (f'Jumlah BOOM yang muncul ada sebanyak: {jumlah_boom}')
+
+print (f'Jumlah BOOM yang muncul ada sebanyak: {jumlah_boom}')
