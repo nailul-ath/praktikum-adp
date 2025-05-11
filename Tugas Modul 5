@@ -1,0 +1,20 @@
+x= [i for i in range(-7, 8)]
+print (f' f(x) yang memenuhi interval {x} adalah:')
+y = []
+print (f' | x |  f(x) | ') 
+for i in x:
+    if 0<i<3:
+        fx= i**3 -i
+        print (f' | {i} | {fx:.3f} |') 
+    elif 2<i<5:
+        fx= i**3 -i
+        print (f' | {i} | {fx:.3f}|') 
+    elif 4<i<8:
+        fx= i**3 -i
+        print (f' | {i} |{fx:.3f}|') 
+    elif i<0:
+        fx= 1/(i**2)
+        print (f' |{i} | {fx:.3f} |') 
+    else:
+        fx = 1
+        print (f' | {i} | {fx:.3f} |') 
