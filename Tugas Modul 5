@@ -1,20 +1,21 @@
-x= [i for i in range(-7, 8)]
-print (f' f(x) yang memenuhi interval {x} adalah:')
-y = []
+nilai_x= [i for i in range(-7, 8)]
+nilai_fx=[]
+print (f' f(x) yang memenuhi interval x adalah:')
 print (f' | x |  f(x) | ') 
-for i in x:
-    if 0<i<3:
-        fx= i**3 -i
-        print (f' | {i} | {fx:.3f} |') 
-    elif 2<i<5:
-        fx= i**3 -i
-        print (f' | {i} | {fx:.3f}|') 
-    elif 4<i<8:
-        fx= i**3 -i
-        print (f' | {i} |{fx:.3f}|') 
-    elif i<0:
+for i in nilai_x:
+    if i<0:
         fx= 1/(i**2)
         print (f' |{i} | {fx:.3f} |') 
-    else:
+    elif i==0:
         fx = 1
-        print (f' | {i} | {fx:.3f} |') 
+        print (f' | {i} | {fx:.3f} |')
+    else:
+        fx= i**3 -i
+        if 0<=fx<10:
+            print (f' | {i} | {fx:.3f} |') 
+        elif 10<=fx<100:
+            print (f' | {i} | {fx:.3f}|') 
+        else:
+            print (f' | {i} |{fx:.3f}|') 
+    nilai_fx.append (fx)
+print (f'dimana nilai x berada pada interval {nilai_x}\ndengan f(x): {nilai_fx}')
