@@ -1,0 +1,120 @@
+#OUTPUT 1---------------------------------------------------------
+# tampilan
+def tampilan():
+    print("\n--- Menu ---")
+    print("1. Tabel perkalian modulo n (cayley)")
+    print("2. Mencari nilai Σ x")
+    print("3. Mencari nilai n!")
+    print("4. Total dan rata-rata suatu data")
+    print("5. Keluar")
+    print("------------")
+#masukkan opsi
+def main():
+    while True:
+        tampilan()
+        pilihan = input("Masukkan pilihan Anda [1-5]: ")
+        if pilihan == '1':
+            cayley()
+        elif pilihan == '2':
+            sigma_x()
+        elif pilihan == '3':
+            faktorial_n()
+        elif pilihan == '4':
+            total_dan_rata2()
+        elif pilihan == '5':
+            print("Terima kasih, program berakhir.")
+            break 
+        else:
+            print("Pilihan tidak valid. Silakan masukkan angka 1-5.")
+
+# OUTPUT 2 ---------------------------------
+#opsi 1
+def cayley():
+    while True:
+        n = int(input("Masukkan nilai n [0 < n <= 10]: "))
+        if 0 < n <= 10:
+            break
+        else:
+            print("Nilai n harus antara 1 sampai 10. Silakan coba lagi.")
+        # Cetak header kolom
+    print(f"\nTabel Perkalian Modulo {n}:")
+    print("\n--- Pilihan 1: Tabel Perkalian Modulo n ---")
+    print("   ", end="")
+    for i in range(n):
+        print(f"{i:3}", end="")
+    print("\n   " + "---" * n) # Garis pemisah
+    # Cetak isi tabel
+    for i in range(n):
+        print(f"{i:2}|", end="")
+        for j in range(n):
+            hasil_modulo = (i * j) % n
+            print(f"{hasil_modulo:3}", end="")
+        print()
+
+ #opsi2   
+def sigma_x():
+    print("\n--- Pilihan 2: Mencari nilai Σ x ---")
+
+    while True:
+        batas_bawah = int(input("Masukkan batas bawah: "))
+        batas_atas= int(input('Masukkan batas atas:'))
+        if batas_atas >= batas_bawah:
+            break
+        else:
+            print("Batas atas tidak boleh kurang dari batas bawah. Silakan ulangi.")
+    total_sigma = 0
+    for x in range(batas_bawah, batas_atas + 1):
+        total_sigma += x 
+    print(f"Σ x = {total_sigma}")
+
+#opsi3
+def faktorial_n():
+    print("\n--- Pilihan 3: Mencari nilai n! ---")
+    
+    while True: 
+        n= int(input("Masukkan nilai n [n ≥ 0]: "))
+        
+        if n >= 0:
+            break 
+        else:
+            print("Nilai n harus lebih besar atau sama dengan 0. Silakan ulangi.")
+
+    if n == 0:
+        hasil_faktorial = 1 
+    else:
+        hasil_faktorial = 1
+        for i in range(1, n+ 1):
+            hasil_faktorial *= i 
+
+    print(f"{n}! = {hasil_faktorial}")
+
+#opsi4
+def total_dan_rata2():
+    print("\n--- Pilihan 4: Total dan Rata-rata Suatu Data ---")
+    
+    while True: 
+        banyak_data= int(input("Masukkan banyak data (n > 0): ") )
+        if banyak_data > 0:
+            break 
+        else:
+            print("Banyak data harus lebih besar dari 0. Silakan ulangi.")
+    data = [] 
+    print("\nInputkan setiap data:")
+    for i in range(banyak_data):
+            nilai = float(input(f"Data ke-{i+1}: "))
+            data.append(nilai) 
+    # Tampilkan data dalam tabel 
+    print("\nData yang Anda masukkan:")
+    print("--------------------")
+    print("No | Nilai")
+    print("--------------------")
+    total=0
+    for i in data:
+        print(f' {data.index(i)+1} |  {i}')
+        total += i
+    rata_rata = total / banyak_data
+
+    print(f"Total = {total}")
+    print(f"Rata-rata = {rata_rata}")
+
+main()
