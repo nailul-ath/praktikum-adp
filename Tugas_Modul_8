@@ -1,0 +1,84 @@
+# Buat file text data praktikan (data_pratikan.txt) yang berisi (NIM, Nama, Nilai Pretest, Nilai Postest, Nilai Tugas) minimal 10 data praktikan
+
+jumlah = int(input("Jumlah praktikan [min.10]: "))
+while jumlah<10:
+    print ('Jumlah praktikan minimal 10, masukkan kembali jumlah praktikan!')
+    jumlah = int(input("Jumlah praktikan [min.10]: "))
+    
+praktikan= {}
+#input data praktikan
+for i in range(jumlah):
+    nama = input(f"Nama praktikan ke-{i+1} : ")
+    nim = input("NIM: ")
+    pretest= float(input('Nilai pretest: '))
+    posttest= float(input('Nilai posttest: '))
+    tugas = float(input('Nilai tugas: '))
+    praktikan[nama] = {    #key di sini adalah 'nama' dan valuenya: nim, pretest, posttest, dan tugas
+        "nim": nim,
+        "pretest": pretest,
+        "posttest": posttest,
+        "tugas": tugas
+    }
+# Simpan data ke file data_praktikan.txt:
+with open("data_praktikan.txt", "w") as file:
+    for nama, data in praktikan.items(): #key=nama, value=data=nim dan nilai-nilai
+        file.write(f"{nama},{data['nim']},{data['pretest']},{data['posttest']},{data['tugas']}\n")
+
+# Baca file, simpan data ke dictionary 
+praktikan_dict = {}
+
+with open("data_praktikan.txt", "r") as file:
+    for line in file:
+        nama, nim, pre, post, tugas = line.strip().split(",")
+        praktikan_dict[nama] = {
+            "nim": nim,
+            "pretest": float(pre),
+            "posttest": float(post),
+            "tugas": float(tugas)
+        }
+# Hitung nilai akhir setiap praktikan dan simpan ke file baru
+nilai_akhir = {}
+with open("data_nilai_akhir.txt", "w") as file:
+    file.write("Nama | NIM | Nilai Akhir\n")
+    for nama, data in praktikan_dict.items():
+        total = 0.35 * data["pretest"] + 0.35 * data["posttest"] + 0.30 * data["tugas"]
+        total = round(total, 2)
+        nilai_akhir[nama] = total
+        file.write(f"{nama} | {data['nim']} | {total}\n")     
+
+# Tentukan pratikan dengan nilai tertinggi dan terendah serta rata-rata nilai akhir semua pratikan dan tentukan banyak pratikan yang mendapat nilai dibawah rata-rata
+print("----Nilai Akhir----")
+nilai_list = list(nilai_akhir.values())
+rata = sum(nilai_list) / len(nilai_list)
+maks = max(nilai_list)
+minn = min(nilai_list)
+print(f"Rata-rata: {rata:.2f}")
+
+nama_maks = []
+nama_min = []
+
+for nama, nilai in nilai_akhir.items():
+    if nilai == maks:
+        nama_maks.append(nama)
+    if nilai == minn:
+        nama_min.append(nama)
+
+# atau bisa pakai:
+# nama_maks = [nama for nama, nilai in nilai_akhir.items() if nilai == maks]
+# nama_min = [nama for nama, nilai in nilai_akhir.items() if nilai == minn]
+
+print(f"Nilai Tertinggi adalah {maks} oleh:")
+for nama in nama_maks:
+    print(f" - {nama}")
+
+print(f"Nilai Terendah adalah {minn} oleh:")
+for nama in nama_min:
+    print(f" - {nama}")
+
+jumlah_dibawah_rata=0
+for nama, nilai in nilai_akhir.items():
+    if nilai < rata:
+        jumlah_dibawah_rata += 1
+# atau bisa pakai: jumlah_dibawah_rata = sum(1 for nilai in nilai_list if nilai < rata)
+
+print(f"Jumlah yang di bawah rata-rata: {jumlah_dibawah_rata}")
