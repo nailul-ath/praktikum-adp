@@ -1,0 +1,15 @@
+import time
+from termcolor import cprint
+text = " " * 20 + "HAPPY EID!" + " " * 20
+width = 20  # lebar area tampilan
+duration = 20
+steps = len(text) - width
+delay = duration / steps
+for i in range(steps - 1, -1,-1): #artinya loop mundur
+    window = text[i:i+width]  #substring
+    # atau bisa pakai ini: (minusnya output kelap kelip)
+    # os.system ('cls')
+    # cprint (window, 'yellow', 'on_black')
+    cprint("\r" + window, 'yellow', 'on_black', end="")
+    time.sleep(delay)
+print('halo')
