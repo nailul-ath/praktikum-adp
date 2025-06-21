@@ -1,13 +1,27 @@
 import datetime as dt
 import os
 import time
+from termcolor import cprint
 
+def loading():
+    for i in range (11):
+        print (' '*27, 'saving', i*10,'%')
+        cprint(' '*6*i,'white', 'on_blue')
+        time.sleep(0.1)
+        clear_screen()
+        
 def clear_screen():
     os.system('cls')
 
 tday = dt.date.today()
 tanggal = str(tday)
 buku = {}
+
+username= input('Enter your name: ')
+clear_screen()
+loading()
+clear_screen()
+
 
 def load_catatan():
     if os.path.exists("catatan.txt"):
@@ -38,15 +52,18 @@ def load_catatan():
                         "isi": "\n".join(isi_lines)
                     }
 
-
-def tampilan():
+def tampilan ():
     clear_screen()
-    print("\n--- Menu ---")
+    welcome= 'Welcome to Diary App, ' + username + '!'
+    lebar_layar = 64
+    spasi = (lebar_layar - len(welcome)) // 2
+    print( " " * spasi + welcome)
+    cprint(' '*30 + "MENU" + ' '*30, 'white', 'on_blue')
     print("1. Buat baru")
     print("2. Cari catatan")
     print("3. Lihat catatan sebelumnya")
     print("4. Keluar")
-    print("------------")
+    print(" "*lebar_layar)
 
 def main():
     load_catatan()
@@ -117,7 +134,8 @@ def baru():
     }
     with open("catatan.txt", "a") as file:
         file.write(f"Judul: {judul}\nTanggal: {tanggal}\nIsi: {isi}\n\n")
-    print('Sedang menyimpan....')
+    # print('Sedang menyimpan....')
+    loading()
     time.sleep(2)
     os.system('cls' if os.name == 'nt' else 'clear')
     print('Sudah disimpan, terima kasih.')
@@ -144,22 +162,32 @@ def lihat():
     
 
     while True:
-        action = input("Apa yang ingin Anda lakukan? (e)dit, (h)apus, (k)embali ke menu: ").lower()
+        print('What do you wanna do?\ntype [E/D/B]')
+        cprint ('E', 'white', 'on_yellow', end='')
+        cprint ('dit, ', 'yellow', end='')
+        cprint ('D', 'red', 'on_yellow', end='')
+        cprint ('elete, ', 'red', end='')
+        print ('or ', end='')
+        cprint ('B', 'green', 'on_yellow', end='')
+        cprint ('ack ', 'green', end='')
+        action = input("to Menu: ").lower()
         if action == 'e':
             edit(judul_terpilih)
             break
-        elif action == 'h':
+        elif action == 'd':
             hapus(judul_terpilih)
             break
-        elif action == 'k':
+        elif action == 'b':
             break
         else:
-            print("Pilihan tidak dikenal, silakan coba lagi.")
+            print("Input uknown, plese try again!")
     clear_screen()
 
 def search():
     while True:
-        keyword = input('Masukkan kata kunci untuk mencari judul: ').strip()
+        print('lookin for your notes?')
+        time.sleep(1)
+        keyword = input('Enter your keyword title: ').strip()
         found = False
         for judul, details in buku.items():
             if keyword.lower() in judul.lower():
@@ -183,6 +211,7 @@ def hapus(judul=None):
         clear_screen()
 
 def save_catatan():
+    loading()
     with open("catatan.txt", "w") as file:
         for judul, details in buku.items():
             file.write(f"Judul: {judul}\nTanggal: {details['tanggal']}\nIsi: {details['isi']}\n\n")
@@ -196,5 +225,5 @@ def edit(judul):
         print("Catatan berhasil diperbarui.")
         time.sleep(2)
     clear_screen()
-    
-main()
+
+main ()
