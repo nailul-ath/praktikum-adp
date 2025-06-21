@@ -1,0 +1,136 @@
+import tkinter as tk
+from tkinter import messagebox, simpledialog, Text, Scrollbar
+import datetime as dt
+import os
+
+# Data
+buku = {}
+tday = dt.date.today()
+tanggal = str(tday)
+
+# Load dari file
+def load_catatan():
+    if os.path.exists("catatan.txt"):
+        with open("catatan.txt", "r") as file:
+            data = file.read().strip()
+            catatan_list = data.split("\n===\n")
+            for catatan in catatan_list:
+                lines = catatan.strip().splitlines()
+                if len(lines) >= 2:
+                    judul = lines[0]
+                    tanggal_ctt = lines[1]
+                    isi = "\n".join(lines[2:])
+                    buku[judul] = {"tanggal": tanggal_ctt, "isi": isi}
+
+# Save ke file
+
+def save_catatan():
+    with open("catatan.txt", "w") as file:
+        for judul, detail in buku.items():
+            file.write(f"{judul}\n{detail['tanggal']}\n{detail['isi']}\n===\n")
+
+# Aplikasi Tkinter
+root = tk.Tk()
+root.title("Diary App")
+root.geometry("600x400")
+
+# Frame Utama
+frame_utama = tk.Frame(root)
+frame_utama.pack(fill="both", expand=True)
+
+label_welcome = tk.Label(frame_utama, text="Welcome to Diary App!", font=("Arial", 18))
+label_welcome.pack(pady=10)
+
+# Navigasi tombol
+
+def buka_buat_catatan():
+    win = tk.Toplevel(root)
+    win.title("Buat Catatan Baru")
+    tk.Label(win, text="Judul:").pack()
+    ent_judul = tk.Entry(win, width=50)
+    ent_judul.pack()
+
+    tk.Label(win, text="Isi:").pack()
+    txt_isi = Text(win, height=10)
+    txt_isi.pack()
+
+    def simpan():
+        judul = ent_judul.get().strip()
+        isi = txt_isi.get("1.0", tk.END).strip()
+        if not judul:
+            messagebox.showwarning("Peringatan", "Judul tidak boleh kosong")
+            return
+        buku[judul] = {'tanggal': tanggal, 'isi': isi}
+        save_catatan()
+        messagebox.showinfo("Sukses", "Catatan disimpan!")
+        win.destroy()
+
+    tk.Button(win, text="Simpan", command=simpan).pack(pady=5)
+
+
+def buka_lihat_catatan():
+    win = tk.Toplevel(root)
+    win.title("Lihat Catatan")
+    listbox = tk.Listbox(win, width=50)
+    listbox.pack(padx=10, pady=5)
+
+    for judul in buku:
+        listbox.insert(tk.END, judul)
+
+    txt = Text(win, height=10)
+    txt.pack(padx=10, pady=5)
+
+    def tampilkan_isi(evt):
+        idx = listbox.curselection()
+        if not idx:
+            return
+        judul = listbox.get(idx)
+        detail = buku[judul]
+        txt.delete("1.0", tk.END)
+        txt.insert(tk.END, f"Tanggal: {detail['tanggal']}\n\n{detail['isi']}")
+
+    def hapus():
+        idx = listbox.curselection()
+        if not idx:
+            return
+        judul = listbox.get(idx)
+        if messagebox.askyesno("Konfirmasi", f"Hapus catatan '{judul}'?"):
+            del buku[judul]
+            save_catatan()
+            listbox.delete(idx)
+            txt.delete("1.0", tk.END)
+
+    def edit():
+        idx = listbox.curselection()
+        if not idx:
+            return
+        judul = listbox.get(idx)
+        detail = buku[judul]
+
+        edit_win = tk.Toplevel(win)
+        edit_win.title("Edit Catatan")
+        tk.Label(edit_win, text=f"Judul: {judul}").pack()
+        txt_edit = Text(edit_win, height=10)
+        txt_edit.insert(tk.END, detail['isi'])
+        txt_edit.pack()
+
+        def simpan_edit():
+            buku[judul]['isi'] = txt_edit.get("1.0", tk.END).strip()
+            save_catatan()
+            messagebox.showinfo("Sukses", "Catatan diperbarui.")
+            edit_win.destroy()
+
+        tk.Button(edit_win, text="Simpan", command=simpan_edit).pack()
+
+    listbox.bind("<<ListboxSelect>>", tampilkan_isi)
+    tk.Button(win, text="Edit", command=edit).pack(side="left", padx=5, pady=5)
+    tk.Button(win, text="Hapus", command=hapus).pack(side="right", padx=5, pady=5)
+
+# Tombol menu utama
+tk.Button(frame_utama, text="Buat Catatan Baru", width=30, command=buka_buat_catatan).pack(pady=5)
+tk.Button(frame_utama, text="Lihat Catatan", width=30, command=buka_lihat_catatan).pack(pady=5)
+tk.Button(frame_utama, text="Keluar", width=30, command=root.destroy).pack(pady=5)
+
+# Load data dan jalankan
+load_catatan()
+root.mainloop()
