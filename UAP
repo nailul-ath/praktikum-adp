@@ -17,20 +17,27 @@ def load_catatan():
             for catatan in catatan_list:
                 lines = catatan.splitlines()
                 judul = ""
-                tanggal = ""
-                isi = ""
+                tanggal_ctt = ""
+                isi_lines = []
+                parsing_isi = False
                 for line in lines:
                     if line.startswith("Judul:"):
                         judul = line.replace("Judul:", "").strip()
+                        # parsing_isi = False
                     elif line.startswith("Tanggal:"):
-                        tanggal = line.replace("Tanggal:", "").strip()
+                        tanggal_ctt = line.replace("Tanggal:", "").strip()
+                        # parsing_isi = False
                     elif line.startswith("Isi:"):
-                        isi = line.replace("Isi:", "").strip()
+                        isi_lines.append(line.replace("Isi:", "").strip())
+                        parsing_isi = True
+                    elif parsing_isi:
+                        isi_lines.append(line)
                 if judul:
                     buku[judul] = {
-                        "tanggal": tanggal,
-                        "isi": isi
+                        "tanggal": tanggal_ctt,
+                        "isi": "\n".join(isi_lines)
                     }
+
 
 def tampilan():
     clear_screen()
@@ -59,7 +66,35 @@ def main():
         else:
             print("Pilihan tidak valid. Silakan masukkan angka 1-4.")
 
-
+def load_catatan():
+    if os.path.exists("catatan.txt"):
+        with open("catatan.txt", "r") as file:
+            data = file.read().strip()
+            catatan_list = data.split("\n\n")
+            for catatan in catatan_list:
+                lines = catatan.splitlines()
+                judul = ""
+                tanggal_ctt = ""
+                isi_lines = []
+                parsing_isi = False
+                for line in lines:
+                    if line.startswith("Judul:"):
+                        judul = line.replace("Judul:", "").strip()
+                        # parsing_isi = False
+                    elif line.startswith("Tanggal:"):
+                        tanggal_ctt = line.replace("Tanggal:", "").strip()
+                        # parsing_isi = False
+                    elif line.startswith("Isi:"):
+                        isi_lines.append(line.replace("Isi:", "").strip())
+                        parsing_isi = True
+                    elif parsing_isi:
+                        isi_lines.append(line)
+                if judul:
+                    buku[judul] = {
+                        "tanggal": tanggal_ctt,
+                        "isi": "\n".join(isi_lines)
+                    }
+                    
 def input_paragraf():
     print("Tulis isi catatanmu. Ketik 'END' (tanpa tanda kutip) lalu tekan Enter untuk mengakhiri.\n")
     lines = []
@@ -107,6 +142,7 @@ def lihat():
     details = buku[judul_terpilih]
     print(f"\nJudul: {judul_terpilih}\nTanggal: {details['tanggal']}\nIsi: {details['isi']}")
     
+
     while True:
         action = input("Apa yang ingin Anda lakukan? (e)dit, (h)apus, (k)embali ke menu: ").lower()
         if action == 'e':
@@ -121,26 +157,21 @@ def lihat():
             print("Pilihan tidak dikenal, silakan coba lagi.")
     clear_screen()
 
-# def search():
-#     keyword = input('Masukkan kata kunci untuk mencari: ').strip()
-#     found = False
-#     for judul, details in buku.items():
-#         if keyword.lower() in judul.lower() or keyword.lower() in details['isi'].lower():
-#             print(f'Found:\nJudul: {judul}\nTanggal: {details["tanggal"]}\nIsi: {details["isi"]}\n')
-#             found = True
-           
-#     if not found:
-#         print("Tidak ada catatan yang ditemukan.")
 def search():
-    keyword = input('Masukkan kata kunci untuk mencari judul: ').strip()
-    found = False
-    for judul, details in buku.items():
-        if keyword.lower() in judul.lower():
-            print(f'Found:\nJudul: {judul}\nTanggal: {details["tanggal"]}\nIsi: {details["isi"]}\n')
-            found = True
+    while True:
+        keyword = input('Masukkan kata kunci untuk mencari judul: ').strip()
+        found = False
+        for judul, details in buku.items():
+            if keyword.lower() in judul.lower():
+                print(f'Found:\nJudul: {judul}\nTanggal: {details["tanggal"]}\nIsi: {details["isi"]}\n')
+                found = True
 
-    if not found:
-        print("Tidak ada catatan dengan judul yang sesuai.")
+        if not found:
+            print("Tidak ada catatan dengan judul yang sesuai.")
+        pil= input('(c)ari judul lainnya atau (k)embali:  ')
+        if pil.lower()=='k':
+            break
+        clear_screen()
 
 
 def hapus(judul=None):
