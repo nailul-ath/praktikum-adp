@@ -4,12 +4,12 @@ import time
 from termcolor import cprint
 
 def loading():
-    for i in range (11):
-        print (' '*27, 'saving', i*10,'%')
-        cprint(' '*6*i,'white', 'on_blue')
+    for i in range(11):
+        print(' ' * 27, 'saving', i * 10, '%')
+        cprint(' ' * 6 * i, 'white', 'on_blue')
         time.sleep(0.1)
         clear_screen()
-        
+
 def clear_screen():
     os.system('cls')
 
@@ -17,53 +17,39 @@ tday = dt.date.today()
 tanggal = str(tday)
 buku = {}
 
-username= input('Enter your name: ')
+username = input('Enter your name: ')
 clear_screen()
 loading()
 clear_screen()
-
 
 def load_catatan():
     if os.path.exists("catatan.txt"):
         with open("catatan.txt", "r") as file:
             data = file.read().strip()
-            catatan_list = data.split("\n\n")
+            catatan_list = data.split("\n===\n")
             for catatan in catatan_list:
-                lines = catatan.splitlines()
-                judul = ""
-                tanggal_ctt = ""
-                isi_lines = []
-                parsing_isi = False
-                for line in lines:
-                    if line.startswith("Judul:"):
-                        judul = line.replace("Judul:", "").strip()
-                        # parsing_isi = False
-                    elif line.startswith("Tanggal:"):
-                        tanggal_ctt = line.replace("Tanggal:", "").strip()
-                        # parsing_isi = False
-                    elif line.startswith("Isi:"):
-                        isi_lines.append(line.replace("Isi:", "").strip())
-                        parsing_isi = True
-                    elif parsing_isi:
-                        isi_lines.append(line)
-                if judul:
+                lines = catatan.strip().splitlines()
+                if len(lines) >= 2:
+                    judul = lines[0]
+                    tanggal_ctt = lines[1]
+                    isi = "\n".join(lines[2:])
                     buku[judul] = {
                         "tanggal": tanggal_ctt,
-                        "isi": "\n".join(isi_lines)
+                        "isi": isi
                     }
 
-def tampilan ():
+def tampilan():
     clear_screen()
-    welcome= 'Welcome to Diary App, ' + username + '!'
+    welcome = 'Welcome to Diary App, ' + username + '!'
     lebar_layar = 64
     spasi = (lebar_layar - len(welcome)) // 2
-    print( " " * spasi + welcome)
-    cprint(' '*30 + "MENU" + ' '*30, 'white', 'on_blue')
+    print(" " * spasi + welcome)
+    cprint(' ' * 30 + "MENU" + ' ' * 30, 'white', 'on_blue')
     print("1. Buat baru")
     print("2. Cari catatan")
     print("3. Lihat catatan sebelumnya")
     print("4. Keluar")
-    print(" "*lebar_layar)
+    print(" " * lebar_layar)
 
 def main():
     load_catatan()
@@ -79,39 +65,10 @@ def main():
             lihat()
         elif pilihan == '4':
             print("Terima kasih, program berakhir.")
-            break 
+            break
         else:
             print("Pilihan tidak valid. Silakan masukkan angka 1-4.")
 
-def load_catatan():
-    if os.path.exists("catatan.txt"):
-        with open("catatan.txt", "r") as file:
-            data = file.read().strip()
-            catatan_list = data.split("\n\n")
-            for catatan in catatan_list:
-                lines = catatan.splitlines()
-                judul = ""
-                tanggal_ctt = ""
-                isi_lines = []
-                parsing_isi = False
-                for line in lines:
-                    if line.startswith("Judul:"):
-                        judul = line.replace("Judul:", "").strip()
-                        # parsing_isi = False
-                    elif line.startswith("Tanggal:"):
-                        tanggal_ctt = line.replace("Tanggal:", "").strip()
-                        # parsing_isi = False
-                    elif line.startswith("Isi:"):
-                        isi_lines.append(line.replace("Isi:", "").strip())
-                        parsing_isi = True
-                    elif parsing_isi:
-                        isi_lines.append(line)
-                if judul:
-                    buku[judul] = {
-                        "tanggal": tanggal_ctt,
-                        "isi": "\n".join(isi_lines)
-                    }
-                    
 def input_paragraf():
     print("Tulis isi catatanmu. Ketik 'END' (tanpa tanda kutip) lalu tekan Enter untuk mengakhiri.\n")
     lines = []
@@ -125,19 +82,16 @@ def input_paragraf():
 def baru():
     print(f'Today is {tday:%A}, {tday}')
     judul = input('Judul: ').strip()
-
     isi = input_paragraf()
-
     buku[judul] = {
         'tanggal': tanggal,
         'isi': isi
     }
     with open("catatan.txt", "a") as file:
-        file.write(f"Judul: {judul}\nTanggal: {tanggal}\nIsi: {isi}\n\n")
-    # print('Sedang menyimpan....')
+        file.write(f"{judul}\n{tanggal}\n{isi}\n===\n")
     loading()
     time.sleep(2)
-    os.system('cls' if os.name == 'nt' else 'clear')
+    clear_screen()
     print('Sudah disimpan, terima kasih.')
     time.sleep(2)
     clear_screen()
@@ -146,30 +100,31 @@ def lihat():
     if not buku:
         print("Belum ada catatan yang disimpan.")
         return
+
     print("\n=== Daftar Judul Catatan ===")
-    for i, judul in enumerate(buku.keys(), start=1):
+    judul_list = list(buku.keys())
+    for i, judul in enumerate(judul_list, start=1):
         print(f"{i}. {judul}")
 
     pilihan = input("Masukkan nomor catatan yang ingin dilihat: ").strip()
     clear_screen()
-    if not pilihan.isdigit() or int(pilihan) < 1 or int(pilihan) > len(buku):
+    if not pilihan.isdigit() or int(pilihan) < 1 or int(pilihan) > len(judul_list):
         print("Input tidak valid.")
         return
 
-    judul_terpilih = list(buku.keys())[int(pilihan) - 1]
+    judul_terpilih = judul_list[int(pilihan) - 1]
     details = buku[judul_terpilih]
     print(f"\nJudul: {judul_terpilih}\nTanggal: {details['tanggal']}\nIsi: {details['isi']}")
-    
 
     while True:
         print('What do you wanna do?\ntype [E/D/B]')
-        cprint ('E', 'white', 'on_yellow', end='')
-        cprint ('dit, ', 'yellow', end='')
-        cprint ('D', 'red', 'on_yellow', end='')
-        cprint ('elete, ', 'red', end='')
-        print ('or ', end='')
-        cprint ('B', 'green', 'on_yellow', end='')
-        cprint ('ack ', 'green', end='')
+        cprint('E', 'white', 'on_yellow', end='')
+        cprint('dit, ', 'yellow', end='')
+        cprint('D', 'red', 'on_yellow', end='')
+        cprint('elete, ', 'red', end='')
+        print('or ', end='')
+        cprint('B', 'green', 'on_yellow', end='')
+        cprint('ack ', 'green', end='')
         action = input("to Menu: ").lower()
         if action == 'e':
             edit(judul_terpilih)
@@ -180,12 +135,12 @@ def lihat():
         elif action == 'b':
             break
         else:
-            print("Input uknown, plese try again!")
+            print("Input unknown, please try again!")
     clear_screen()
 
 def search():
     while True:
-        print('lookin for your notes?')
+        print('Looking for your notes?')
         time.sleep(1)
         keyword = input('Enter your keyword title: ').strip()
         found = False
@@ -196,11 +151,10 @@ def search():
 
         if not found:
             print("Tidak ada catatan dengan judul yang sesuai.")
-        pil= input('(c)ari judul lainnya atau (k)embali:  ')
-        if pil.lower()=='k':
+        pil = input('(c)ari judul lainnya atau (k)embali:  ')
+        if pil.lower() == 'k':
             break
         clear_screen()
-
 
 def hapus(judul=None):
     if judul in buku:
@@ -213,17 +167,16 @@ def hapus(judul=None):
 def save_catatan():
     loading()
     with open("catatan.txt", "w") as file:
-        for judul, details in buku.items():
-            file.write(f"Judul: {judul}\nTanggal: {details['tanggal']}\nIsi: {details['isi']}\n\n")
+        for judul, detail in buku.items():
+            file.write(f"{judul}\n{detail['tanggal']}\n{detail['isi']}\n===\n")
 
 def edit(judul):
     if judul in buku:
         print(f"Editing catatan: {judul}")
         buku[judul]['isi'] = input_paragraf()
-
         save_catatan()
         print("Catatan berhasil diperbarui.")
-        time.sleep(2)
+        time.sleep(0.5)
     clear_screen()
 
-main ()
+main()
