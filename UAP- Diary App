@@ -27,24 +27,19 @@ def save_catatan():
             tanggal = detail['tanggal']
             file.write(f"{judul}~{tanggal}~{isi}\n")
 
-
 # Tkinter app
+# a. window pertama
 root = tk.Tk()
 root.title("Diary App")
 root.geometry("600x400")
 root.resizable(True, True)
 root.minsize(400, 300)
 
-
 frame_utama = tk.Frame(root)
 frame_utama.pack(fill="both", expand=True)
-warna_all = '#ffffff'
 
-name = tk.StringVar()
-label_name = tk.Label(frame_utama, text='Type Your Name', font=('Brush Script MT', 35))
-label_name.pack(pady=15)
-entry_name = tk.Entry(frame_utama, width=25)
-entry_name.pack(pady=10)
+    # pengaturan warna tema
+warna_all = '#ffffff'
 
 def ubah_warna():
     warna = colorchooser.askcolor()[1]
@@ -53,7 +48,20 @@ def ubah_warna():
         warna_all = warna
         frame_utama.config(bg=warna_all)
 
+    #  input nama
+name = tk.StringVar()
+label_name = tk.Label(frame_utama, text='Type Your Name', font=('Brush Script MT', 35))
+label_name.pack(pady=15)
+
+entry_name = tk.Entry(frame_utama, width=25)
+entry_name.pack(pady=10)
+
 def after_login():
+    nama = entry_name.get().strip()
+    if not nama:
+        messagebox.showwarning("Warning", "Name can't be empty.")
+        return
+    name.set(nama)  # simpan ke StringVar (opsional)
     gantiwarna1.destroy()
     name.set(entry_name.get())
     label_name.destroy()
@@ -61,6 +69,20 @@ def after_login():
     login.destroy()
     main_page()
 
+# b. main page
+def main_page():
+    label_welcome = tk.Label(
+        frame_utama,
+        text=f"Welcome to Diary App, {name.get()}! ",
+        background=warna_all,
+        font=("Brush Script MT", 35))
+    label_welcome.pack(pady=10)
+    tk.Button(frame_utama, text="Make a New Note", width=30, command=buka_buat_catatan).pack(pady=5)
+    tk.Button(frame_utama, text="See Previous Notes", width=30, command=buka_lihat_catatan).pack(pady=5)
+    tk.Button(root, text="Change Frame Color", width=30, command=ubah_warna).pack(pady=5)
+    tk.Button(frame_utama, text="Out of Diary App", width=30, command=akhir).pack(pady=5)
+    
+    #  pilihan utama 1
 def buka_buat_catatan():
     win = tk.Toplevel(root)
     win.title("New Note")
@@ -86,7 +108,8 @@ def buka_buat_catatan():
         win.destroy()
        
     tk.Button(win, text="Save", command=simpan).pack(pady=5)
-  
+
+    # pilihan utama 2 
 def buka_lihat_catatan():
     win = tk.Toplevel(root)
     win.title("Notes")
@@ -162,28 +185,17 @@ def buka_lihat_catatan():
 
         tk.Button(edit_win, text="Simpan", command=simpan_edit).pack()
    
-
     listbox.bind("<<ListboxSelect>>", tampilkan_isi)
     tk.Button(frame_buttons, text="Edit", command=edit).pack(side="left", padx=5)
     tk.Button(frame_buttons, text="Delete", command=hapus).pack(side="right", padx=5)
+# fungsi halaman utama(menampilkan pilihan utama)
 
-def main_page():
-    label_welcome = tk.Label(
-        frame_utama,
-        text=f"Welcome to Diary App, {name.get()}! ",
-        background=warna_all,
-        font=("Brush Script MT", 35))
-    label_welcome.pack(pady=10)
-    tk.Button(frame_utama, text="Make a New Note", width=30, command=buka_buat_catatan).pack(pady=5)
-    tk.Button(frame_utama, text="See Previous Notes", width=30, command=buka_lihat_catatan).pack(pady=5)
-    tk.Button(frame_utama, text="Change Frame Color", width=30, command=ubah_warna).pack(pady=5)
-    tk.Button(frame_utama, text="Out of Diary App", width=30, command=akhir).pack(pady=5)
-
+# halaman login
 login = tk.Button(frame_utama, text='Login', command=after_login)
 login.pack(pady=5)
 gantiwarna1 = tk.Button(root, text="Change theme color", command=ubah_warna)
 gantiwarna1.pack(pady=5)
-
+# pilihan utama akhir
 def akhir():
     root.destroy()
     daftar_catatan = []
