@@ -17,8 +17,10 @@ def load_catatan():
         with open("catatan.txt", "r") as file:
             for line in file:
                 bagian = line.strip().split("~")
-                if len(bagian) == 3:
-                    judul, tanggal, isi = bagian
+                if len(bagian) >= 3:
+                    judul = bagian[0]
+                    tanggal = bagian[1]
+                    isi = "~".join(bagian[2:]) 
                     isi = isi.replace('\\n', '\n')
                     buku[judul] = {"tanggal": tanggal, "isi": isi}
     else:
