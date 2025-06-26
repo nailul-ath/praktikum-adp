@@ -1,3 +1,5 @@
+#Desy Fadilla - Nailul Athiyyah
+
 import tkinter as tk
 from tkinter import messagebox, Text, colorchooser
 import datetime as dt
