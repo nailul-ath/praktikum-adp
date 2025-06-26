@@ -19,6 +19,9 @@ def load_catatan():
                     judul, tanggal, isi = bagian
                     isi = isi.replace('\\n', '\n')
                     buku[judul] = {"tanggal": tanggal, "isi": isi}
+    else:
+        with open("catatan.txt", "w") as file:
+            pass
 
 def save_catatan():
     with open("catatan.txt", "w") as file:
