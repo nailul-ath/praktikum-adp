@@ -1,0 +1,217 @@
+import tkinter as tk
+from tkinter import messagebox, Text, colorchooser
+import datetime as dt
+import os
+
+# Initial data
+buku = {}
+tday = dt.date.today()
+hari = tday.strftime("%A")
+date = "Today is " + hari + ", " + str(tday)
+tanggal= str(tday)
+
+def load_catatan():
+    if os.path.exists("catatan.txt"):
+        with open("catatan.txt", "r") as file:
+            for line in file:
+                bagian = line.strip().split("~")
+                if len(bagian) >= 3:
+                    judul = bagian[0]
+                    tanggal = bagian[1]
+                    isi = "~".join(bagian[2:]) 
+                    isi = isi.replace('\\n', '\n')
+                    buku[judul] = {"tanggal": tanggal, "isi": isi}
+    else:
+        with open("catatan.txt", "w") as file:
+            pass
+def save_catatan():
+    with open("catatan.txt", "w") as file:
+        for judul, detail in buku.items():
+            isi = detail['isi'].replace('\n', '\\n')  
+            tanggal = detail['tanggal']
+            file.write(f"{judul}~{tanggal}~{isi}\n")
+
+warna_all = "#653333"
+# Tkinter app
+# a. window pertama
+root = tk.Tk()
+root.title("Diary App")
+root.geometry("600x400")
+root.resizable(True, True)
+root.minsize(400, 300)
+root.config (bg=warna_all)
+
+frame_utama = tk.Frame(root)
+frame_utama.pack(fill="both", expand=True)
+
+    # pengaturan warna tema
+
+def ubah_warna():
+    warna = colorchooser.askcolor()[1]
+    global warna_all
+    if warna:
+        warna_all = warna
+        frame_utama.config(bg=warna_all)
+
+    #  input nama
+name = tk.StringVar()
+label_name = tk.Label(frame_utama, text='Type Your Name', font=('Brush Script MT', 35))
+label_name.pack(pady=15)
+
+entry_name = tk.Entry(frame_utama, width=25)
+entry_name.pack(pady=10)
+ 
+def after_login():
+    nama = entry_name.get().strip()
+    if not nama:
+        messagebox.showwarning("Warning", "Name can't be empty.")
+        return
+    name.set(entry_name.get())
+    # name.set(nama)  # simpan ke StringVar (opsional)
+    gantiwarna1.destroy()
+    label_name.destroy()
+    entry_name.destroy()
+    login.destroy()
+    main_page()
+
+# b. main page
+def main_page():
+    label_welcome = tk.Label(
+        frame_utama,
+        text=f"Welcome to Diary App, {name.get()}! ",
+        background=warna_all,
+        font=("Brush Script MT", 35))
+    label_welcome.pack(pady=10)
+    tk.Button(frame_utama, text="Make a New Note", width=30, command=buka_buat_catatan).pack(pady=5)
+    tk.Button(frame_utama, text="See Previous Notes", width=30, command=buka_lihat_catatan).pack(pady=5)
+    tk.Button(root, text="Change Frame Color", width=30, command=ubah_warna).pack(pady=5)
+    tk.Button(frame_utama, text="Out of Diary App", width=30, command=akhir).pack(pady=5)
+    
+    #  pilihan utama 1
+def buka_buat_catatan():
+    win = tk.Toplevel(root)
+    win.title("New Note")
+    win.config(bg=warna_all)
+
+    tk.Label(win, text=date, bg=warna_all).pack()
+    tk.Label(win, text="Title:").pack()
+    ent_judul = tk.Entry(win, width=50)
+    ent_judul.pack()
+
+    tk.Label(win, text="Details:").pack()
+    txt_isi = Text(win, height=10)
+    txt_isi.pack()
+
+    def simpan():
+        judul = ent_judul.get().strip()
+        isi = txt_isi.get("1.0", tk.END).strip()
+        if not judul:
+            messagebox.showwarning("Warning", "Title can't be empty")
+            return
+        buku[judul] = {'tanggal': tanggal, 'isi': isi}
+        save_catatan()
+        win.destroy()
+       
+    tk.Button(win, text="Save", command=simpan).pack(pady=5)
+
+    # pilihan utama 2 
+def buka_lihat_catatan():
+        win = tk.Toplevel(root)
+        win.title("Notes")
+        win.config(bg=warna_all)
+
+        frame_list = tk.Frame(win)
+        frame_list.pack(fill="both", expand=True, padx=10, pady=5)
+
+        list_title = tk.Label(frame_list, text='Title List', font=('Arial', 12, 'bold'))
+        list_title.pack()
+
+        listbox = tk.Listbox(frame_list, width=50)
+        listbox.pack(side="left", fill="both", expand=True)
+        # scrollbar = tk.Scrollbar(frame_list, orient="vertical", command=listbox.yview)
+        # scrollbar.pack(side="right", fill="y")
+        # listbox.config(yscrollcommand=scrollbar.set)
+
+        for judul in buku:
+            listbox.insert(tk.END, judul)
+
+        frame_text = tk.Frame(win)
+        frame_text.pack(fill="both", expand=True, padx=10, pady=5)
+
+        text_title = tk.Label(frame_text, text='Details', font=('Arial', 9, 'bold'))
+        text_title.pack(pady=(0, 5))
+        txt = Text(frame_text, height=10)
+        txt.pack(fill="both", expand=True)
+
+        frame_buttons = tk.Frame(win)
+        frame_buttons.pack(fill="x", padx=10, pady=5)
+
+        def tampilkan_isi(event):
+            idx = listbox.curselection()
+            if not idx:
+                return
+            judul = listbox.get(idx)
+            detail = buku[judul]
+            txt.delete("1.0", tk.END)
+            txt.insert(tk.END, f"Date: {detail['tanggal']}\n\n{detail['isi']}")
+
+        def hapus():
+            idx = listbox.curselection()
+            if not idx:
+                return
+            judul = listbox.get(idx)
+            if messagebox.askyesno("Confirm", f"Delete '{judul}'?"):
+                del buku[judul]
+                save_catatan()
+                listbox.delete(idx)
+                txt.delete("1.0", tk.END)
+
+        def edit():
+            idx = listbox.curselection()
+            if not idx:
+                return
+            judul = listbox.get(idx)
+            detail = buku[judul]
+
+            edit_win = tk.Toplevel(win)
+            edit_win.title("Edit Notes")
+            edit_win.config(bg=warna_all)
+
+            tk.Label(edit_win, text=f"Title: {judul}").pack()
+            txt_edit = Text(edit_win, height=10)
+            txt_edit.insert(tk.END, detail['isi'])
+            txt_edit.pack()
+
+            def simpan_edit():
+                buku[judul]['isi'] = txt_edit.get("1.0", tk.END).strip()
+                save_catatan()
+                messagebox.showinfo("Succes", "Notes Updated")
+                edit_win.destroy()
+
+            tk.Button(edit_win, text="Save", command=simpan_edit).pack()
+    
+        listbox.bind("<<ListboxSelect>>", tampilkan_isi)
+        tk.Button(frame_buttons, text="Edit", command=edit).pack(side="left", padx=5)
+        tk.Button(frame_buttons, text="Delete", command=hapus).pack(side="right", padx=5)
+# fungsi halaman utama(menampilkan pilihan utama)
+
+# halaman login
+login = tk.Button(frame_utama, text='Login', command=after_login)
+login.pack(pady=5)
+gantiwarna1 = tk.Button(root, text="Change theme color", command=ubah_warna)
+gantiwarna1.pack(pady=5)
+# pilihan utama akhir
+def akhir():
+    root.destroy()
+    daftar_catatan = []
+    print('\n### Diary List ###\n')
+    print(f"{'No':<4} {'Date':<12} {'Title':<20} Details")
+    print('-' * 60)
+
+    for i, (judul, detail) in enumerate(buku.items(), start=1):
+        tanggal = detail['tanggal']
+        isi = detail['isi'].replace('\n', ' ~ ')
+        daftar_catatan.append([i, tanggal, judul, isi])
+        print(f"{i:<4} {tanggal:<12} {judul:<20} {isi}")
+load_catatan()
+root.mainloop()
